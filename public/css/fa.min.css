@@ -1,0 +1,21 @@
+/*!
+ * Font Awesome Pro 5.13.0 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license (Commercial License)
+ */
+ 
+ .fa,.fal,.far,.fas{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;display:inline-block;font-style:normal;font-variant:normal;text-rendering:auto;line-height:1}@keyframes a{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.fa-angle-left:before{content:"\f104"}.fa-angle-right:before{content:"\f105"}.fa-arrow-up:before{content:"\f062"}.fa-bars:before{content:"\f0c9"}.fa-chevron-left:before{content:"\f053"}.fa-chevron-right:before{content:"\f054"}.fa-copyright:before{content:"\f1f9"}.fa-envelope:before{content:"\f0e0"}.fa-eye:before{content:"\f06e"}.fa-file:before{content:"\f15b"}.fa-heart:before{content:"\f004"}.fa-home:before{content:"\f015"}.fa-key:before{content:"\f084"}.fa-link:before{content:"\f0c1"}.fa-map-marker-alt:before{content:"\f3c5"}.fa-pencil:before{content:"\f040"}.fa-pencil-alt:before{content:"\f303"}.fa-phone:before{content:"\f095"}.fa-phone-alt:before{content:"\f879"}.fa-plus:before{content:"\f067"}.fa-search:before{content:"\f002"}.fa-shopping-bag:before{content:"\f290"}.fa-star:before{content:"\f005"}.fa-times:before{content:"\f00d"}.fa-trash-alt:before{content:"\f2ed"}.fa-user:before{content:"\f007"}@font-face{font-family:Font Awesome\ 5 Brands;font-style:normal;font-weight:400;font-display:block;src:url(../fonts/fa-brands-400.eot);src:url(../fonts/fa-brands-400d41d.eot?#iefix) format("embedded-opentype"),url(../fonts/fa-brands-400.woff2) format("woff2"),url(../fonts/fa-brands-400.woff) format("woff"),url(../fonts/fa-brands-400.ttf) format("truetype"),url(../fonts/fa-brands-400.svg#fontawesome) format("svg")}@font-face{font-family:Font Awesome\ 5 Duotone;font-style:normal;font-weight:900;font-display:block;src:url(../fonts/fa-duotone-900.eot);src:url(../fonts/fa-duotone-900d41d.eot?#iefix) format("embedded-opentype"),url(../fonts/fa-duotone-900.woff2) format("woff2"),url(../fonts/fa-duotone-900.woff) format("woff"),url(../fonts/fa-duotone-900.ttf) format("truetype"),url(../fonts/fa-duotone-900.svg#fontawesome) format("svg")}@font-face{font-family:Font Awesome\ 5 Pro;font-style:normal;font-weight:300;font-display:block;src:url(../fonts/fa-light-300.eot);src:url(../fonts/fa-light-300d41d.eot?#iefix) format("embedded-opentype"),url(../fonts/fa-light-300.woff2) format("woff2"),url(../fonts/fa-light-300.woff) format("woff"),url(../fonts/fa-light-300.ttf) format("truetype"),url(../fonts/fa-light-300.svg#fontawesome) format("svg")}.fal{font-weight:300}@font-face{font-family:Font Awesome\ 5 Pro;font-style:normal;font-weight:400;font-display:block;src:url(../fonts/fa-regular-400.eot);src:url(../fonts/fa-regular-400d41d.eot?#iefix) format("embedded-opentype"),url(../fonts/fa-regular-400.woff2) format("woff2"),url(../fonts/fa-regular-400.woff) format("woff"),url(../fonts/fa-regular-400.ttf) format("truetype"),url(../fonts/fa-regular-400.svg#fontawesome) format("svg")}.fal,.far{font-family:Font Awesome\ 5 Pro}.far{font-weight:400}@font-face{font-family:Font Awesome\ 5 Pro;font-style:normal;font-weight:900;font-display:block;src:url(../fonts/fa-solid-900.eot);src:url(../fonts/fa-solid-900d41d.eot?#iefix) format("embedded-opentype"),url(../fonts/fa-solid-900.woff2) format("woff2"),url(../fonts/fa-solid-900.woff) format("woff"),url(../fonts/fa-solid-900.ttf) format("truetype"),url(../fonts/fa-solid-900.svg#fontawesome) format("svg")}.fa,.fas{font-family:Font Awesome\ 5 Pro;font-weight:900}
+ 
+.fa-address-book:before {
+    content: "\f2b9"
+}
+
+.fa-money-bill:before {
+    content: "\f0d6"
+}
+
+.fa-arrow-circle-left:before {
+    content: "\f0a8"
+}
+ 
+
+

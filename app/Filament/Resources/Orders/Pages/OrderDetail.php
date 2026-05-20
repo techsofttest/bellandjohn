@@ -20,7 +20,7 @@ class OrderDetail extends ViewRecord
 
     public function getTitle(): string
     {
-        return "Order Details";
+        return "Request Details";
     }
 
     /*

@@ -31,7 +31,7 @@ class CategoryForm
                     ->columnSpanFull(),
                 FileUpload::make('image')
                     ->image()
-                    ->hidden(),
+                    ->directory('categories'),
                 TextInput::make('meta_title')
                     ->default(null),
                 TextInput::make('meta_desc')
@@ -42,6 +42,9 @@ class CategoryForm
                 ->options(Category::query()->pluck('name', 'id'))
                 ->nullable()
                 ->searchable(),
+                 Toggle::make('is_featured')
+                ->label('Featured Spotlight')
+                ->default(false),
             ]);
     }
 }

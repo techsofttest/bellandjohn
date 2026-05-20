@@ -23,29 +23,35 @@ class OrdersTable
     {
         return $table
             ->columns([
-                TextColumn::make('order_number')->sortable(),
-                TextColumn::make('customer_name'),
-                TextColumn::make('total')->money('INR'),
-                TextColumn::make('payment_status'),
+                TextColumn::make('placed_at')
+                    ->label('Date & Time')
+                    ->dateTime('M j, Y g:i A')
+                    ->sortable(),
+                TextColumn::make('order_number')
+                    ->label('Request Number')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('customer_name')
+                    ->label('Name')
+                    ->state(fn ($record) => trim(($record->shipping_address['first_name'] ?? '') . ' ' . ($record->shipping_address['last_name'] ?? '')) ?: ($record->customer_name ?? ''))
+                    ->searchable(),
+                TextColumn::make('shipping_address')
+                    ->label('Address')
+                    ->state(fn ($record) => $record->shipping_address['address'] ?? '')
+                    ->limit(45),
+                TextColumn::make('items_count')
+                    ->label('Total Items')
+                    ->counts('items'),
             ])
             ->defaultSort('placed_at', 'desc')
             ->filters([
                  SelectFilter::make('status')
-                ->label('Order Status')
+                ->label('Request Status')
                 ->options([
                     'pending' => 'Pending',
                     'processing' => 'Processing',
                     'completed' => 'Completed',
                     'cancelled' => 'Cancelled',
-                ]),
-
-                SelectFilter::make('payment_status')
-                ->label('Payment Status')
-                ->options([
-                    'pending' => 'Pending',
-                    'paid' => 'Paid',
-                    'refunded' => 'Refunded',
-                    'failed' => 'Failed',
                 ]),
 
                 Filter::make('keyword')

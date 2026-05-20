@@ -11,6 +11,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+use Filament\Tables\Columns\ToggleColumn;
+
 class CategoriesTable
 {
     public static function configure(Table $table): Table
@@ -20,6 +22,9 @@ class CategoriesTable
                 TextColumn::make('name')
                     ->searchable(),
                 ImageColumn::make('image'),
+                ToggleColumn::make('is_featured')
+                    ->label('Featured Spotlight')
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

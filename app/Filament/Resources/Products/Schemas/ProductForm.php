@@ -183,8 +183,14 @@ class ProductForm
 
                 Section::make('Images & Visibility')
                     ->schema([
+                        FileUpload::make('image')
+                            ->label('Main Image')
+                            ->image()
+                            ->directory('products')
+                            ->columnSpanFull(),
+
                         FileUpload::make('additional_images')
-                            ->label('Images')
+                            ->label('Additional Images')
                             ->image()
                             ->multiple()
                             ->directory('products')

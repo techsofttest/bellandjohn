@@ -26,9 +26,19 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('')
             ->spa(true)
-            ->brandLogo(asset('admin_assets/logo.webp'))
+            ->brandLogo(function() {
+                try {
+                    if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                        $logo = \App\Models\Setting::getValue('logo');
+                        if ($logo) {
+                            return asset('storage/' . $logo);
+                        }
+                    }
+                } catch (\Throwable $e) {}
+                return asset('admin_assets/logo.webp');
+            })
             ->login()
 			->profile()
             ->colors([
@@ -41,7 +51,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
-            ->pages([
+            ->pages([                                                                                                                                                           
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')

@@ -21,6 +21,9 @@ class CountriesTable
                     ->searchable(),
                 IconColumn::make('is_active')
                     ->boolean(),
+                IconColumn::make('is_default')
+                    ->boolean()
+                    ->label('Default'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

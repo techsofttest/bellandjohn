@@ -18,6 +18,9 @@ class CountryForm
                     ->required(),
                 Toggle::make('is_active')
                     ->required(),
+                Toggle::make('is_default')
+                    ->label('Is Default')
+                    ->default(false),
             ]);
     }
 }

@@ -28,9 +28,15 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    protected static ?string $recordTitleAttribute = 'Orders';
+    protected static ?string $recordTitleAttribute = 'order_number';
+
+    protected static ?string $modelLabel = 'Request';
+    
+    protected static ?string $pluralModelLabel = 'Requests';
+    
+    protected static ?string $navigationLabel = 'Requests';
 
      protected static ?int $navigationSort = 5;
 
@@ -49,22 +55,14 @@ class OrderResource extends Resource
 
        return $schema->schema([
 
-        // Order Details Section
-        Section::make('Order Details')->schema([
-            TextInput::make('order_number')->label('Order Number')->disabled(),
-            TextInput::make('status')->disabled(),
-            TextInput::make('payment_status')->disabled(),
-            TextInput::make('payment_method')->disabled(),
-            TextInput::make('subtotal')->disabled(),
-            TextInput::make('discount_total')->disabled(),
-            TextInput::make('tax_total')->disabled(),
-            TextInput::make('shipping_total')->disabled(),
-            TextInput::make('total')->disabled(),
+        // Request Details Section
+        Section::make('Request Details')->schema([
+            TextInput::make('order_number')->label('Request Number')->disabled(),
+            TextInput::make('status')->label('Status')->disabled(),
+            TextInput::make('subtotal')->label('Subtotal Amount')->disabled(),
+            TextInput::make('total')->label('Total Amount')->disabled(),
             TextInput::make('currency')->disabled(),
-            TextInput::make('coupon_code')->label('Coupon')->disabled(),
-            TextInput::make('coupon_discount')->disabled(),
-            TextInput::make('placed_at')->label('Placed At')->disabled(),
-            TextInput::make('paid_at')->label('Paid At')->disabled(),
+            TextInput::make('placed_at')->label('Submitted At')->disabled(),
         ])->columnSpanFull(),
 
         // Customer Info Section
@@ -72,15 +70,9 @@ class OrderResource extends Resource
            
         ])->columnSpanFull(),
 
-        // Billing Address
-        /*Section::make('Billing Address')->schema([
-            KeyValue::make('billing_address')->disabled(),
-        ]),
-        */
-
-        // Shipping Address
-        Section::make('Shipping Address')->schema([
-            KeyValue::make('shipping_address')->disabled(),
+        // Address
+        Section::make('Address')->schema([
+            KeyValue::make('shipping_address')->label('Address Details')->disabled(),
         ])->columnSpanFull(),
 
         // Notes

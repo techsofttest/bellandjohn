@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\QuoteRequestMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 
@@ -125,6 +128,15 @@ class OrderApiController extends Controller
             $order->save();
 
             DB::commit();
+
+            // Send admin notification email
+            try {
+                $order->load('items.product');
+                $adminEmail = env('MAIL_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS', 'admin@bellnjohn.com'));
+                Mail::to($adminEmail)->send(new QuoteRequestMail($order));
+            } catch (Exception $mailEx) {
+                Log::warning('Quote request email failed: ' . $mailEx->getMessage());
+            }
 
             return response()->json([
                 'status' => 'success',

@@ -86,29 +86,43 @@ Q House Suite 408 76 Furze Rd Sandyford Ind Estate Dublin D18 HH67 Ireland</p>
       <h2 class="sec-title">Send Us a Message</h2>
      
     </div>
-	 <form action="#" method="POST" class="ajax-contact">
+	 {{-- Success / Error Flash Messages --}}
+	 @if(session('success'))
+		<div style="background:#d4edda;color:#155724;border:1px solid #c3e6cb;padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+			{{ session('success') }}
+		</div>
+	 @endif
+	 @if(session('error'))
+		<div style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+			{{ session('error') }}
+		</div>
+	 @endif
+
+	 <form action="{{ route('contact.submit') }}" method="POST" class="ajax-contact">
+		@csrf
       <div class="row">
         <div class="form-group col-md-6">
-          <input type="text" class="form-control style2" name="name" placeholder="First Name" required="">
+          <input type="text" class="form-control style2" name="first_name" value="{{ old('first_name') }}" placeholder="First Name" required>
           <i class="fal fa-user"></i></div>
 		       <div class="form-group col-md-6">
-          <input type="text" class="form-control style2" name="name" placeholder="Last Name" required="">
+          <input type="text" class="form-control style2" name="last_name" value="{{ old('last_name') }}" placeholder="Last Name" required>
           <i class="fal fa-user"></i></div>
         <div class="form-group col-md-6">
-          <input type="email" class="form-control style2" name="email" placeholder="Email Address" required="">
+          <input type="email" class="form-control style2" name="email" value="{{ old('email') }}" placeholder="Email Address" required>
           <i class="fal fa-envelope"></i></div>
 		   <div class="form-group col-md-6">
-          <input type="text" class="form-control style2" name="phone" placeholder="Phone No" required="">
+          <input type="text" class="form-control style2" name="phone" value="{{ old('phone') }}" placeholder="Phone No" required>
           <i class="fal fa-phone"></i></div>
-    
         <div class="form-group col-12">
-          <textarea name="message" id="message" cols="30" rows="3" class="form-control style2" placeholder=" Your Message" required=""></textarea>
+          <input type="text" class="form-control style2" name="subject" value="{{ old('subject') }}" placeholder="Subject" required>
+          <i class="fal fa-tag"></i></div>
+        <div class="form-group col-12">
+          <textarea name="message" id="message" cols="30" rows="3" class="form-control style2" placeholder="Your Message" required>{{ old('message') }}</textarea>
           <i class="fal fa-pencil"></i></div>
         <div class="form-btn col-12">
-          <button class="vs-btn style7">Send Message</button>
+          <button type="submit" class="vs-btn style7">Send Message</button>
         </div>
       </div>
- 
     </form>
 	 
 	 </div>

@@ -16,7 +16,7 @@ class OrdersOverview extends StatsOverviewWidget
     {
         $totalOrders = Order::count();
         $totalUsers = User::count();
-        $totalProducts = Product::count();
+        $totalProducts = Product::count( );
         return [
              Stat::make('Total Orders', $totalOrders)
                 ->description('All time orders')

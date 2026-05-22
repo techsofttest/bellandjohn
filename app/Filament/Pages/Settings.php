@@ -5,24 +5,21 @@ namespace App\Filament\Pages;
 use App\Models\Setting;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\EmbeddedSchema;
+use Filament\Schemas\Components\Actions;
 use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Concerns\InteractsWithForms;
 
-class Settings extends Page implements HasForms
+class Settings extends Page
 {
-    use InteractsWithForms;
-
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static string | \UnitEnum | null $navigationGroup = 'Content Management';
 
     protected static ?string $title = 'General Settings';
-
-    protected string $view = 'filament.pages.settings';
 
     public ?array $data = [];
 
@@ -33,9 +30,9 @@ class Settings extends Page implements HasForms
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Section::make('Website Logo')
                     ->schema([
@@ -49,6 +46,21 @@ class Settings extends Page implements HasForms
                     ]),
             ])
             ->statePath('data');
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Form::make([EmbeddedSchema::make('form')])
+                    ->id('form')
+                    ->livewireSubmitHandler('save')
+                    ->footer([
+                        Actions::make($this->getFormActions())
+                            ->alignment('start')
+                            ->key('form-actions'),
+                    ]),
+            ]);
     }
 
     protected function getFormActions(): array

@@ -261,4 +261,47 @@ class CustomerAuthController extends Controller
             'message' => 'Your password has been reset successfully. Please sign in.'
         ], 200);
     }
+
+    /**
+     * Change Password (authenticated user)
+     */
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $customer = $request->user();
+
+        if (!Hash::check($request->current_password, $customer->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Current password is incorrect.'
+            ], 422);
+        }
+
+        if ($request->current_password === $request->new_password) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'New password must be different from your current password.'
+            ], 422);
+        }
+
+        $customer->password = Hash::make($request->new_password);
+        $customer->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Your password has been changed successfully.'
+        ], 200);
+    }
 }

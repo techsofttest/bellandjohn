@@ -24,6 +24,7 @@ Route::post('/customer/reset-password', [CustomerAuthController::class, 'resetPa
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/customer/me', [CustomerAuthController::class, 'me']);
     Route::post('/customer/logout', [CustomerAuthController::class, 'logout']);
+    Route::post('/customer/change-password', [CustomerAuthController::class, 'changePassword']);
 });
 
 // Next.js Frontend APIs

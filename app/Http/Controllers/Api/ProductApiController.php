@@ -337,6 +337,52 @@ class ProductApiController extends Controller
     }
 
     /**
+     * Lightweight product search for autocomplete suggestions.
+     * Returns id, name, slug, image_url — fast and minimal.
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $q = trim($request->input('q', ''));
+
+        if (mb_strlen($q) < 2) {
+            return response()->json([
+                'status' => 'success', 
+                'data' => [],
+                'message' => 'Query must be at least 2 characters'
+            ]);
+        }
+
+        $products = Product::where('is_active', true)
+            ->where(function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhere('sku', 'like', "%{$q}%")
+                      ->orWhereHas('brand', fn ($bq) => $bq->where('name', 'like', "%{$q}%"));
+            })
+            ->select('id', 'name', 'slug', 'image')
+            ->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", ["{$q}%"])
+            ->orderBy('created_at', 'desc')
+            ->limit(8)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id'        => $p->id,
+                    'name'      => $p->name,
+                    'slug'      => $p->slug ?? (string) $p->id,
+                    'image_url' => $p->image_url ?? url('logo/logo.png'),
+                ];
+            });
+
+        return response()->json([
+            'status' => 'success', 
+            'data' => $products->values(),
+            'meta' => [
+                'count' => $products->count(),
+                'query' => $q
+            ]
+        ]);
+    }
+
+    /**
      * Get general settings (logo, countries list).
      */
     public function settings()
@@ -346,17 +392,17 @@ class ProductApiController extends Controller
 
         $countries = \App\Models\Country::where('is_active', true)->get()->map(function ($country) {
             return [
-                'id' => $country->id,
-                'name' => $country->name,
-                'code' => $country->code,
-                'is_default' => (bool)$country->is_default,
+                'id'         => $country->id,
+                'name'       => $country->name,
+                'code'       => $country->code,
+                'is_default' => (bool) $country->is_default,
             ];
         });
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'logo' => $logoUrl,
+            'data'   => [
+                'logo'      => $logoUrl,
                 'countries' => $countries,
             ]
         ]);

@@ -11,6 +11,8 @@ class Product extends Model
 {
     protected $guarded = []; 
 
+    protected $appends = ['image_url', 'additional_images_urls'];
+
     protected $casts = [
         'additional_images' => 'array',
         'variant_options' => 'array',
@@ -20,6 +22,43 @@ class Product extends Model
         'shipping_disabled_methods' => 'array',
         'shipping_enabled_methods' => 'array',
     ];
+
+    /**
+     * Build a proxy URL for any image path that routes through PHP.
+     * Using /api/file/ bypasses Apache's broken UTF-8 filename decoding
+     * for special chars like ®, ", commas, etc.
+     * PHP correctly decodes the URL and serves the file from disk.
+     */
+    public static function buildStorageUrl(?string $path): ?string
+    {
+        if (!$path) return null;
+        // Encode each segment individually (preserving / separators)
+        $encoded = implode('/', array_map('rawurlencode', explode('/', $path)));
+        return url('/api/file/' . $encoded);
+    }
+
+    /**
+     * Returns a fully encoded absolute URL for the main product image.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        return static::buildStorageUrl($this->image);
+    }
+
+    /**
+     * Returns fully encoded absolute URLs for all additional images.
+     *
+     * @return string[]
+     */
+    public function getAdditionalImagesUrlsAttribute(): array
+    {
+        $images = $this->additional_images ?? [];
+        if (!is_array($images)) return [];
+        return array_values(array_filter(array_map(
+            fn($img) => static::buildStorageUrl($img),
+            $images
+        )));
+    }
 
     public function category(): BelongsTo
     {

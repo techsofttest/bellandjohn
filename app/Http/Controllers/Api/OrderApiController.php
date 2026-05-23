@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -138,6 +139,12 @@ class OrderApiController extends Controller
                 Log::warning('Quote request email failed: ' . $mailEx->getMessage());
             }
 
+            try {
+                $this->pushOrderToZohoCrm($order);
+            } catch (Exception $zohoEx) {
+                Log::warning('Zoho CRM push failed: ' . $zohoEx->getMessage());
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Quote request placed successfully.',
@@ -192,5 +199,82 @@ class OrderApiController extends Controller
             'status' => 'success',
             'data' => $requests
         ]);
+    }
+
+    /**
+     * Push the quote request to Zoho CRM as a lead.
+     */
+    protected function pushOrderToZohoCrm(Order $order)
+    {
+        $zoho = config('services.zoho');
+        if (empty($zoho['client_id']) || empty($zoho['client_secret']) || empty($zoho['refresh_token'])) {
+            Log::warning('Zoho CRM credentials are not configured. Skipping push.');
+            return;
+        }
+
+        $accessToken = $this->getZohoAccessToken($zoho);
+        if (!$accessToken) {
+            Log::warning('Zoho CRM access token could not be acquired. Skipping push.');
+            return;
+        }
+
+        $payload = $this->buildZohoCrmLeadPayload($order);
+        $response = Http::withToken($accessToken)
+            ->acceptJson()
+            ->post("{$zoho['api_domain']}/crm/v2/{$zoho['module']}", [
+                'data' => [$payload],
+                'trigger' => ['approval', 'workflow', 'blueprint'],
+            ]);
+
+        if (!$response->successful()) {
+            $body = $response->body();
+            Log::warning('Zoho CRM lead creation failed: ' . $response->status() . ' ' . $body);
+        }
+    }
+
+    protected function getZohoAccessToken(array $zoho)
+    {
+        $response = Http::asForm()->post("{$zoho['auth_domain']}/oauth/v2/token", [
+            'client_id' => $zoho['client_id'],
+            'client_secret' => $zoho['client_secret'],
+            'refresh_token' => $zoho['refresh_token'],
+            'grant_type' => 'refresh_token',
+        ]);
+
+        if (!$response->successful()) {
+            Log::warning('Zoho CRM token refresh failed: ' . $response->status() . ' ' . $response->body());
+            return null;
+        }
+
+        return $response->json('access_token');
+    }
+
+    protected function buildZohoCrmLeadPayload(Order $order)
+    {
+        $address = $order->billing_address ?? [];
+        $productNames = $order->items->map(function ($item) {
+            return $item->title;
+        })->filter()->unique()->join(', ');
+
+        $descriptionParts = [];
+        if (!empty($order->notes)) {
+            $descriptionParts[] = trim($order->notes);
+        }
+        if (!empty($productNames)) {
+            $descriptionParts[] = 'Products: ' . $productNames;
+        }
+        if (!empty($address)) {
+            $descriptionParts[] = 'Shipping address: ' . ($address['address'] ?? '') . ', ' . ($address['city'] ?? '') . ', ' . ($address['state'] ?? '') . ', ' . ($address['country'] ?? '');
+        }
+
+        return [
+            'First_Name' => $address['first_name'] ?? ($order->customer?->name ?? 'Unknown'),
+            'Last_Name' => $address['last_name'] ?? 'Unknown',
+            'Email' => $address['email'] ?? null,
+            'Phone' => $address['phone'] ?? null,
+            'Company' => $address['company'] ?: 'Individual',
+            'Lead_Source' => 'Website Quote Request',
+            'Description' => implode("\n", array_filter($descriptionParts)),
+        ];
     }
 }

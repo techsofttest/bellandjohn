@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'zoho' => [
+        'client_id' => env('ZOHO_CRM_CLIENT_ID'),
+        'client_secret' => env('ZOHO_CRM_CLIENT_SECRET'),
+        'refresh_token' => env('ZOHO_CRM_REFRESH_TOKEN'),
+        'auth_domain' => env('ZOHO_CRM_AUTH_DOMAIN', 'https://accounts.zoho.com'),
+        'api_domain' => env('ZOHO_CRM_API_DOMAIN', 'https://www.zohoapis.com'),
+        'module' => env('ZOHO_CRM_MODULE', 'Leads'),
+    ],
+
 ];

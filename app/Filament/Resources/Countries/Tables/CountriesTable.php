@@ -19,6 +19,11 @@ class CountriesTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
+                TextColumn::make('email_address')
+                    ->label('Email')
+                    ->searchable()
+                    ->toggleable()
+                    ->default('—'),
                 IconColumn::make('is_active')
                     ->boolean(),
                 IconColumn::make('is_default')

@@ -392,10 +392,13 @@ class ProductApiController extends Controller
 
         $countries = \App\Models\Country::where('is_active', true)->get()->map(function ($country) {
             return [
-                'id'         => $country->id,
-                'name'       => $country->name,
-                'code'       => $country->code,
-                'is_default' => (bool) $country->is_default,
+                'id'            => $country->id,
+                'name'          => $country->name,
+                'code'          => $country->code,
+                'is_default'    => (bool) $country->is_default,
+                'address'       => $country->address,
+                'phone_numbers' => $country->phone_numbers ?? [],
+                'email_address' => $country->email_address,
             ];
         });
 

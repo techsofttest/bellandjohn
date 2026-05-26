@@ -8,6 +8,12 @@ class Country extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'phone_numbers' => 'array',
+        'is_active' => 'boolean',
+        'is_default' => 'boolean',
+    ];
+
     protected static function booted()
     {
         static::saving(function ($country) {

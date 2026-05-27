@@ -71,6 +71,16 @@ class CountryForm
                             ->placeholder('info@bellandjohn.online')
                             ->nullable()
                             ->columnSpanFull(),
+
+                        RichEditor::make('working_hours')
+                            ->label('Working Hours')
+                            ->toolbarButtons([
+                                'bold', 'italic', 'underline',
+                                'bulletList', 'orderedList',
+                                'redo', 'undo',
+                            ])
+                            ->nullable()
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

@@ -18,7 +18,8 @@ class ProductApiController extends Controller
     {
         // Fetch only active parent categories
         $query = Category::whereNull('parent_id')
-            ->where('is_active', true);
+            ->where('is_active', true)
+            ->orderBy('name', 'asc');
 
         if ($request->filled('country')) {
             $countryVal = $request->input('country');
@@ -35,7 +36,8 @@ class ProductApiController extends Controller
         }
 
         $categories = $query->with(['children' => function ($q) use ($request) {
-            $q->where('is_active', true);
+            $q->where('is_active', true)
+              ->orderBy('name', 'asc');
             if ($request->filled('country')) {
                 $countryVal = $request->input('country');
                 $q->whereHas('products', function ($pq) use ($countryVal) {
@@ -50,7 +52,8 @@ class ProductApiController extends Controller
                 });
             }
             $q->with(['children' => function ($subQuery) use ($request) {
-                $subQuery->where('is_active', true);
+                $subQuery->where('is_active', true)
+                         ->orderBy('name', 'asc');
                 if ($request->filled('country')) {
                     $countryVal = $request->input('country');
                     $subQuery->whereHas('products', function ($pq) use ($countryVal) {
@@ -267,9 +270,12 @@ class ProductApiController extends Controller
                 }
             })
             ->with(['children' => function ($q) {
-                $q->where('is_active', true)->with(['children' => function ($sq) {
-                    $sq->where('is_active', true);
-                }]);
+                $q->where('is_active', true)
+                  ->orderBy('name', 'asc')
+                  ->with(['children' => function ($sq) {
+                      $sq->where('is_active', true)
+                         ->orderBy('name', 'asc');
+                  }]);
             }])
             ->first();
 
@@ -312,7 +318,8 @@ class ProductApiController extends Controller
     public function featuredCategories(Request $request)
     {
         $query = Category::where('is_featured', true)
-            ->where('is_active', true);
+            ->where('is_active', true)
+            ->orderBy('name', 'asc');
 
         if ($request->filled('country')) {
             $countryVal = $request->input('country');

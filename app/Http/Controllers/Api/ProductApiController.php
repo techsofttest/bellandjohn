@@ -399,6 +399,7 @@ class ProductApiController extends Controller
                 'address'       => $country->address,
                 'phone_numbers' => $country->phone_numbers ?? [],
                 'email_address' => $country->email_address,
+                'working_hours' => $country->working_hours,
             ];
         });
 

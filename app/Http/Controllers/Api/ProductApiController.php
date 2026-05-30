@@ -162,14 +162,14 @@ class ProductApiController extends Controller
         }
 
         // Search Query
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  //->orWhere('sku', 'like', "%{$search}%")
-                  //->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('brand', function ($bq) use ($search) {
-                      //$bq->where('name', 'like', "%{$search}%");
+        $searchTerm = $request->input('search') ?? $request->input('q');
+        if (!empty($searchTerm)) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  //->orWhere('sku', 'like', "%{$searchTerm}%")
+                  //->orWhere('description', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('brand', function ($bq) use ($searchTerm) {
+                      $bq->where('name', 'like', "%{$searchTerm}%");
                   });
             });
         }

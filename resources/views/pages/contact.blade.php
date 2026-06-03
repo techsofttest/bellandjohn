@@ -132,13 +132,26 @@ Q House Suite 408 76 Furze Rd Sandyford Ind Estate Dublin D18 HH67 Ireland</p>
   
   </div>
 </section>
-<div class="mapsec">
-
-<div class="container-fluid">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d317719.5877495047!2d-0.4312316281021684!3d51.52817979531493!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a00baf21de75%3A0x52963a5addd52a99!2sLondon%2C%20UK!5e0!3m2!1sen!2sin!4v1759467604796!5m2!1sen!2sin"  width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+<div class="mapsec" style="padding: 0; margin: 0; overflow: hidden; line-height: 0;">
+    <iframe id="dynamic-google-map" src="" width="100%" height="450" style="border:0; margin: 0; padding: 0; display: block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
 
-</div>
-
+@section('footer_extras')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('{{ url("/api/settings") }}')
+        .then(response => response.json())
+        .then(res => {
+            if (res.status === 'success' && res.data && res.data.map_code) {
+                const mapIframe = document.getElementById('dynamic-google-map');
+                if (mapIframe) {
+                    mapIframe.src = res.data.map_code;
+                }
+            }
+        })
+        .catch(err => console.error('Error fetching settings:', err));
+});
+</script>
+@endsection
 
 @endsection

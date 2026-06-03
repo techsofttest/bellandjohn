@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
             ['layouts.partials.header', 'layouts.partials.footer'],
             function ($view) {
                 $view->with([
-                    'header_categories' => Category::orderBy('name')->get(),
+                    'header_categories' => Category::orderBy('order','asc')->get(),
                     'user'       => auth()->user(),
                     'cartCount'  => session('cart_count', 0),
                 ]);

@@ -90,7 +90,7 @@ class CustomerAuthController extends Controller
             'status' => 'success',
             'message' => 'Login successful',
             'customer' => [
-                'id' => $customer->id,
+                'id' > $customer->id,
                 'name' => $customer->name,
                 'email' => $customer->email,
                 'phone' => $customer->phone,

@@ -19,7 +19,7 @@ class ProductApiController extends Controller
         // Fetch only active parent categories
         $query = Category::whereNull('parent_id')
             ->where('is_active', true)
-            ->orderBy('name', 'asc');
+            ->orderBy('order', 'asc');
 
         if ($request->filled('country')) {
             $countryVal = $request->input('country');
@@ -389,13 +389,11 @@ class ProductApiController extends Controller
         ]);
     }
 
-    /**
-     * Get general settings (logo, countries list).
-     */
     public function settings()
     {
         $logo = \App\Models\Setting::getValue('logo');
         $logoUrl = $logo ? asset('storage/' . $logo) : asset('logo/logo.png');
+        $mapCode = \App\Models\Setting::getValue('map_code');
 
         $countries = \App\Models\Country::where('is_active', true)->get()->map(function ($country) {
             return [
@@ -407,6 +405,15 @@ class ProductApiController extends Controller
                 'phone_numbers' => $country->phone_numbers ?? [],
                 'email_address' => $country->email_address,
                 'working_hours' => $country->working_hours,
+                'map_code'      => $country->map_code,
+            ];
+        });
+
+        $clients = \App\Models\Client::orderBy('order')->get()->map(function($c) {
+            return [
+                'id' => $c->id,
+                'name' => $c->name,
+                'logo' => $c->logo ? asset('storage/' . $c->logo) : null,
             ];
         });
 
@@ -414,7 +421,9 @@ class ProductApiController extends Controller
             'status' => 'success',
             'data'   => [
                 'logo'      => $logoUrl,
+                'map_code'  => $mapCode,
                 'countries' => $countries,
+                'clients'   => $clients,
             ]
         ]);
     }

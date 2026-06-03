@@ -17,8 +17,9 @@ class CountryForm
         return $schema
             ->components([
                 Section::make('Basic Info')
+                    ->columns(1)
                     ->schema([
-                        Grid::make(2)
+                        Grid::make(1)
                             ->schema([
                                 TextInput::make('name')
                                     ->required(),
@@ -26,7 +27,7 @@ class CountryForm
                                     ->required()
                                     ->helperText('e.g. KW, AE, SA'),
                             ]),
-                        Grid::make(2)
+                        Grid::make(1)
                             ->schema([
                                 Toggle::make('is_active')
                                     ->required()
@@ -72,6 +73,11 @@ class CountryForm
                             ->nullable()
                             ->columnSpanFull(),
 
+                        TextInput::make('map_code')
+                            ->label('Google Map Code')
+                            ->nullable()
+                            ->columnSpanFull(),
+                            
                         RichEditor::make('working_hours')
                             ->label('Working Hours')
                             ->toolbarButtons([

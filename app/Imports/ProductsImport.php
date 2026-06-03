@@ -92,35 +92,65 @@ class ProductsImport implements ToCollection, WithHeadingRow
             $shippingDisabled = !empty($row['shippingdisabledmethods']) ? array_map('trim', explode(',', $row['shippingdisabledmethods'])) : [];
             $shippingEnabled = !empty($row['shippingenabledmethods']) ? array_map('trim', explode(',', $row['shippingenabledmethods'])) : [];
 
-            $product = Product::updateOrCreate(
-                ['sku' => $row['sku'] ?? null],
-                [
-                    'name' => $name,
-                    'slug' => Str::slug($name) . '-' . Str::random(5), // Unique slug
-                    'product_id' => $row['product_id'] ?? null,
-                    'category_id' => $categoryId,
-                    'sub_category_id' => $subCategoryId,
-                    'sub_sub_category_id' => $subSubCategoryId,
-                    'brand_id' => $brandId,
-                    'description' => $row['description'] ?? null,
-                    'price' => floatval($row['price'] ?? 0),
-                    'is_active' => strtolower($row['enabled'] ?? 'yes') === 'yes',
-                    'tax_class_code' => $row['taxclasscode'] ?? 'default',
-                    'shipping_freight' => floatval($row['shipping_freight'] ?? 0),
-                    'fixed_shipping_rate_only' => strtolower($row['fixed_shipping_rate_only'] ?? 'no') === 'yes',
-                    'shipping_type' => $row['shippingtype'] ?? null,
-                    'shipping_method_markup' => floatval($row['shippingmethodmarkup'] ?? 0),
-                    'shipping_flat_rate' => floatval($row['shippingflatrate'] ?? 0),
-                    'shipping_disabled_methods' => $shippingDisabled,
-                    'shipping_enabled_methods' => $shippingEnabled,
-                    'upc' => $row['upc'] ?? null,
-                    'seo_title' => $row['seo_title'] ?? null,
-                    'seo_description' => $row['seo_description'] ?? null,
-                    'variant_options' => $variantOptions,
-                    'image' => $mainImage,
-                    'additional_images' => $additionalImages,
-                ]
-            );
+            $skus = [];
+            if (!empty($row['sku'])) {
+                $skus = array_values(array_filter(array_map('trim', explode(',', $row['sku']))));
+            }
+
+            $productId = $row['product_id'] ?? null;
+            $product = null;
+
+            if (!empty($productId)) {
+                $product = Product::where('product_id', $productId)->first();
+            }
+
+            if (!$product && !empty($skus)) {
+                $query = Product::query();
+                $query->where(function ($q) use ($skus) {
+                    foreach ($skus as $index => $skuVal) {
+                        if ($index === 0) {
+                            $q->whereJsonContains('sku', $skuVal);
+                        } else {
+                            $q->orWhereJsonContains('sku', $skuVal);
+                        }
+                    }
+                });
+                $product = $query->first();
+            }
+
+            $productData = [
+                'name' => $name,
+                'product_id' => $productId,
+                'sku' => $skus,
+                'category_id' => $categoryId,
+                'sub_category_id' => $subCategoryId,
+                'sub_sub_category_id' => $subSubCategoryId,
+                'brand_id' => $brandId,
+                'description' => $row['description'] ?? null,
+                'price' => floatval($row['price'] ?? 0),
+                'is_active' => strtolower($row['enabled'] ?? 'yes') === 'yes',
+                'tax_class_code' => $row['taxclasscode'] ?? 'default',
+                'shipping_freight' => floatval($row['shipping_freight'] ?? 0),
+                'fixed_shipping_rate_only' => strtolower($row['fixed_shipping_rate_only'] ?? 'no') === 'yes',
+                'shipping_type' => $row['shippingtype'] ?? null,
+                'shipping_method_markup' => floatval($row['shippingmethodmarkup'] ?? 0),
+                'shipping_flat_rate' => floatval($row['shippingflatrate'] ?? 0),
+                'shipping_disabled_methods' => $shippingDisabled,
+                'shipping_enabled_methods' => $shippingEnabled,
+                'upc' => $row['upc'] ?? null,
+                'seo_title' => $row['seo_title'] ?? null,
+                'seo_description' => $row['seo_description'] ?? null,
+                'variant_options' => $variantOptions,
+                'image' => $mainImage,
+                'additional_images' => $additionalImages,
+            ];
+
+            if ($product) {
+                $product->update($productData);
+            } else {
+                $productData['slug'] = Str::slug($name) . '-' . Str::random(5);
+                $product = Product::create($productData);
+            }
 
             // Countries
             if (!empty($row['countries'])) {

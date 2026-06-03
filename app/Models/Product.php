@@ -14,6 +14,7 @@ class Product extends Model
     protected $appends = ['image_url', 'additional_images_urls'];
 
     protected $casts = [
+        'sku' => 'array',
         'additional_images' => 'array',
         'variant_options' => 'array',
         'is_active' => 'boolean',

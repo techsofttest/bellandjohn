@@ -166,7 +166,7 @@ class ProductApiController extends Controller
         if (!empty($searchTerm)) {
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
-                  //->orWhere('sku', 'like', "%{$searchTerm}%")
+                  ->orWhere('sku', 'like', "%{$searchTerm}%")
                   //->orWhere('description', 'like', "%{$searchTerm}%")
                   ->orWhereHas('brand', function ($bq) use ($searchTerm) {
                       $bq->where('name', 'like', "%{$searchTerm}%");

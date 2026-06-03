@@ -44,9 +44,9 @@ class ProductForm
                             ]),
                         Grid::make(3)
                             ->schema([
-                                TextInput::make('sku')
-                                    ->label('SKU')
-                                    ->unique(ignoreRecord: true)
+                                TagsInput::make('sku')
+                                    ->label('SKUs')
+                                    ->placeholder('Type SKU and press Enter')
                                     ->required(),
                                 TextInput::make('upc')
                                     ->label('UPC')

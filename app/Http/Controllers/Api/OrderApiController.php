@@ -112,7 +112,7 @@ class OrderApiController extends Controller
                     'product_id' => $product->id,
                     'variant_id' => $itemData['variant_id'] ?? null,
                     'title' => $product->title ?? $product->name,
-                    'sku' => $product->sku ?? '',
+                    'sku' => $itemData['sku'] ?? (is_array($product->sku) ? ($product->sku[0] ?? '') : ($product->sku ?? '')),
                     'quantity' => $qty,
                     'price' => $price,
                     'subtotal' => $itemSubtotal,

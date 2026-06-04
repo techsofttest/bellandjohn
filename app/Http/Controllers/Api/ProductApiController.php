@@ -427,4 +427,12 @@ class ProductApiController extends Controller
             ]
         ]);
     }
+    public function faqs()
+    {
+        $faqs = \App\Models\Faq::orderBy('created_at', 'desc')->get();
+        return response()->json([
+            'status' => 'success',
+            'data'   => $faqs,
+        ]);
+    }
 }

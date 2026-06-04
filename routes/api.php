@@ -36,6 +36,7 @@ Route::get('/products/suggestions', [ProductApiController::class, 'searchSuggest
 Route::get('/products', [ProductApiController::class, 'products']);
 Route::get('/products/{slug_or_id}', [ProductApiController::class, 'show']);
 Route::get('/settings', [ProductApiController::class, 'settings']);
+Route::get('/faqs', [ProductApiController::class, 'faqs']);
 
 // Checkout Submission
 Route::post('/orders', [OrderApiController::class, 'store']);

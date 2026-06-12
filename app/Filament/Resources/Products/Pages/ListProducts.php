@@ -27,11 +27,7 @@ class ListProducts extends ListRecords
                 ->form([
                     FileUpload::make('file')
                         ->label('Excel File')
-                        ->acceptedFileTypes([
-                            'application/vnd.ms-excel',
-                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                            'text/csv'
-                        ])
+                        ->disk('public')
                         ->required(),
                 ])
                 ->action(function (array $data) {

@@ -21,19 +21,31 @@ class ListCategories extends ListRecords
     }
 
     public function getTabs(): array
-    {
-        $tabs = [
-            'all' => Tab::make('All Categories')
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('parent_id')),
-        ];
+{
+    $tabs = [
+        'all' => Tab::make('All Categories')
+            ->modifyQueryUsing(
+                fn (Builder $query) => $query->whereNull('parent_id')
+            ),
+    ];
 
-        $parentCategories = Category::whereNull('parent_id')->orderBy('name')->get();
+    $parentCategories = Category::whereNull('parent_id')
+        ->with('childrenRecursive')
+        ->orderBy('name')
+        ->get();
 
-        foreach ($parentCategories as $category) {
-            $tabs['category_' . $category->id] = Tab::make($category->name)
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('parent_id', $category->id));
-        }
+    foreach ($parentCategories as $category) {
 
-        return $tabs;
+        $descendantIds = $category->getDescendantIds();
+
+        $tabs['category_' . $category->id] = Tab::make($category->name)
+            ->modifyQueryUsing(
+                fn (Builder $query) => $query->whereIn('id', $descendantIds)
+            );
     }
+
+    return $tabs;
+}
+
+
 }

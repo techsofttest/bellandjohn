@@ -42,3 +42,6 @@ Route::get('/faqs', [ProductApiController::class, 'faqs']);
 Route::post('/orders', [OrderApiController::class, 'store']);
 Route::get('/my-requests', [OrderApiController::class, 'myRequests']);
 
+// Contact Form
+Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'submitApi']);
+

@@ -219,7 +219,7 @@ class OrderApiController extends Controller
         }
 
         $payload = $this->buildZohoCrmLeadPayload($order);
-        $response = Http::withToken($accessToken)
+        $response = Http::withHeaders(['Authorization' => 'Zoho-oauthtoken ' . $accessToken])
             ->acceptJson()
             ->post("{$zoho['api_domain']}/crm/v2/{$zoho['module']}", [
                 'data' => [$payload],

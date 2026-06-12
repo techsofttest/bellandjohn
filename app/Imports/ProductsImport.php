@@ -154,11 +154,14 @@ class ProductsImport implements ToCollection, WithHeadingRow
 
             // Countries
             if (!empty($row['countries'])) {
-                $countryNames = array_map('trim', explode(',', $row['countries']));
+                $countryCodes = array_map('trim', explode(',', $row['countries']));
                 $countryIds = [];
-                foreach ($countryNames as $countryName) {
-                    $country = Country::firstOrCreate(['name' => $countryName], ['code' => strtoupper(substr($countryName, 0, 2))]);
-                    $countryIds[] = $country->id;
+                foreach ($countryCodes as $code) {
+                    // Match by code instead of name
+                    $country = Country::where('code', strtoupper($code))->first();
+                    if ($country) {
+                        $countryIds[] = $country->id;
+                    }
                 }
                 $product->countries()->sync($countryIds);
             }

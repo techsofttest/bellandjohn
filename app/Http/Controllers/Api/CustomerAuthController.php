@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CustomerOtpMail;
 
 class CustomerAuthController extends Controller
 {
@@ -164,13 +166,16 @@ class CustomerAuthController extends Controller
         // Log OTP
         Log::info("Password reset OTP for customer {$request->email}: {$code}");
 
-        // Return OTP in local environment for easier testing
-        $otpResponse = config('app.env') === 'local' || env('APP_ENV') === 'local' ? $code : null;
+        // Send Email
+        try {
+            Mail::to($request->email)->send(new CustomerOtpMail($code));
+        } catch (\Exception $e) {
+            Log::error('Failed to send OTP email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',
             'message' => 'A 6-digit verification code has been sent to your email.',
-            'otp' => $otpResponse
         ], 200);
     }
 

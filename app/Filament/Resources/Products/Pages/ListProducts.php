@@ -9,6 +9,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ProductsImport;
+use App\Exports\ProductsExport;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,6 +21,15 @@ class ListProducts extends ListRecords
     {
         return [
             CreateAction::make(),
+			Action::make('exportProducts')
+			->label('Export Products')
+			->icon('heroicon-o-arrow-down-tray')
+			->action(function () {
+				return Excel::download(
+					new ProductsExport(),
+					'products.xlsx'
+				);
+			}),
             Action::make('import')
                 ->label('Import Excel')
                 ->icon('heroicon-o-document-arrow-up')

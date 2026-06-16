@@ -204,6 +204,9 @@ class ProductApiController extends Controller
 
         // Pagination
         $perPage = $request->input('per_page', 12);
+        if ($perPage === 'all' || $perPage == -1) {
+            $perPage = $query->count() ?: 12;
+        }
         $products = $query->paginate($perPage);
 
         return response()->json([

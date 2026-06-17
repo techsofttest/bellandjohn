@@ -24,6 +24,15 @@ class Product extends Model
         'shipping_enabled_methods' => 'array',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function (Product $product) {
+            if (empty($product->slug)) {
+                $product->slug = \Illuminate\Support\Str::slug($product->name);
+            }
+        });
+    }
+
     /**
      * Build a proxy URL for any image path that routes through PHP.
      * Using /api/file/ bypasses Apache's broken UTF-8 filename decoding

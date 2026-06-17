@@ -35,12 +35,12 @@ class ProductForm
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (string $operation, $state, $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
                                 TextInput::make('slug')
-                                    ->required()
+                                    ->nullable()
                                     ->unique(ignoreRecord: true),
                                 TextInput::make('product_id')
                                     ->label('Product ID')
                                     ->unique(ignoreRecord: true)
-                                    ->required(),
+                                    ->nullable(),
                             ]),
                         Grid::make(3)
                             ->schema([
@@ -56,7 +56,7 @@ class ProductForm
                                     ->relationship('brand', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
+                                    ->nullable(),
                             ]),
                         Grid::make(3)
                             ->schema([

@@ -19,6 +19,10 @@ class CountriesTable
                     ->searchable(),
                 TextColumn::make('code')
                     ->searchable(),
+                TextColumn::make('company_official_name')
+                    ->label('Official Name')
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('email_address')
                     ->label('Email')
                     ->searchable()

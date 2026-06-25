@@ -230,7 +230,6 @@ class OrderApiController extends Controller
         if (!$accessToken) {
             Log::warning('Zoho CRM access token could not be acquired. Skipping push.');
             return;
-        }
 
         $payload = $this->buildZohoCrmLeadPayload($order);
         $response = Http::withHeaders(['Authorization' => 'Zoho-oauthtoken ' . $accessToken])
@@ -244,7 +243,7 @@ class OrderApiController extends Controller
             $body = $response->body();
             Log::warning('Zoho CRM lead creation failed: ' . $response->status() . ' ' . $body);
         }
-    }
+    }}
 
     protected function getZohoAccessToken(array $zoho)
     {

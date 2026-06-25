@@ -448,6 +448,7 @@ class ProductApiController extends Controller
                 'id'            => $country->id,
                 'name'          => $country->name,
                 'code'          => $country->code,
+                'company_official_name' => $country->company_official_name,
                 'is_default'    => (bool) $country->is_default,
                 'address'       => $country->address,
                 'phone_numbers' => $country->phone_numbers ?? [],

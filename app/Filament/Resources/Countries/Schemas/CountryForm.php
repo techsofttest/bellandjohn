@@ -26,6 +26,11 @@ class CountryForm
                                 TextInput::make('code')
                                     ->required()
                                     ->helperText('e.g. KW, AE, SA'),
+                                TextInput::make('company_official_name')
+                                    ->label('Company Official Name')
+                                    ->placeholder('Bell & John General Trading Co. LLC')
+                                    ->nullable()
+                                    ->maxLength(255),
                             ]),
                         Grid::make(1)
                             ->schema([

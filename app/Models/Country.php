@@ -27,4 +27,12 @@ class Country extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+
+    public function featuredProducts()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_featured_countries'
+        )->withTimestamps();
+    }
 }

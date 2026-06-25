@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -201,11 +202,13 @@ class ProductForm
                                 Toggle::make('is_active')
                                     ->label('Is Active')
                                     ->default(true),
-                                
-                                Toggle::make('is_featured')
-                                    ->label('Is Featured')
-                                    ->default(false),
                             ]),
+
+                        CheckboxList::make('featuredCountries')
+                            ->relationship('featuredCountries', 'name')
+                            ->label('Featured In Countries')
+                            ->columns(2)
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

@@ -12,6 +12,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Country;
 
 class ProductsTable
 {
@@ -63,15 +65,14 @@ class ProductsTable
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('price')
-                    ->money('KWD') 
-                    ->sortable(),
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
-                ToggleColumn::make('is_featured')
-                    ->label('Featured')
-                    ->sortable(),
+                TextColumn::make('featuredCountries.name')
+                    ->label('Featured In')
+                    ->badge()
+                    ->separator(', ')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -84,6 +85,20 @@ class ProductsTable
             ->filters([
                 SelectFilter::make('category')
                     ->relationship('category', 'name'),
+                SelectFilter::make('featured_country')
+                    ->label('Featured In Country')
+                    ->options(fn () => Country::orderBy('name')->pluck('name', 'id'))
+                    ->query(function (Builder $query, array $data): Builder {
+                        $countryId = $data['value'] ?? null;
+
+                        if (blank($countryId)) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('featuredCountries', function (Builder $featuredQuery) use ($countryId) {
+                            $featuredQuery->where('countries.id', $countryId);
+                        });
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),

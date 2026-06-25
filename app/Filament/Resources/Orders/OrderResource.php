@@ -45,7 +45,7 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['customer', 'items']);
+        return parent::getEloquentQuery()->with(['customer', 'items', 'executive']);
 
     }
 

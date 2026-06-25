@@ -27,6 +27,7 @@ class Order extends Model
         'shipping_address',
         'notes',
         'placed_at',
+        'executive_id',
     ];
 
     protected $casts = [
@@ -48,6 +49,11 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function executive()
+    {
+        return $this->belongsTo(Executive::class);
     }
 
 }

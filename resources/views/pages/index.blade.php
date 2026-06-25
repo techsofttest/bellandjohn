@@ -210,6 +210,30 @@
 
 
 @if($featured->isNotEmpty())
+<style>
+  @media (min-width: 992px) {
+    .fetured-dd .featured-col {
+      flex: 0 0 20%;
+      max-width: 20%;
+    }
+    .fetured-dd .tt-product .tt-image-box img {
+      height: 14vw;
+    }
+    .fetured-dd .tt-product .tt-description .tt-title a {
+      font-size: 16px;
+    }
+    .fetured-dd .tt-product .tt-description .tt-price .old-price {
+      font-size: 15px;
+    }
+    .fetured-dd .tt-product {
+      margin-bottom: 25px;
+    }
+    .fetured-dd .product-bb-btns .th-btn {
+      font-size: 13px;
+      padding: 8px 15px;
+    }
+  }
+</style>
 <section class="vs-product-wrapper productsec fetured-dd">
   <div class="container-fluid">
     <div class="title-area text-center">
@@ -225,7 +249,7 @@
       
       @foreach($featured as $product)
 	  
-	    <div class="col-sm-6 col-md-4 col-lg-4  d-flex">
+	    <div class="col-sm-6 col-md-4 col-lg featured-col d-flex">
         <div class="tt-product thumbprod-center product-nohover">
           <div class="tt-image-box">
 

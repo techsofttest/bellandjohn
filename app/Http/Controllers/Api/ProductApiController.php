@@ -7,7 +7,6 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class ProductApiController extends Controller
 {
@@ -156,9 +155,35 @@ class ProductApiController extends Controller
             });
         }
 
-        // Filter by is_featured
+        // Filter by featured countries
         if ($request->has('featured')) {
-            $query->where('is_featured', filter_var($request->input('featured'), FILTER_VALIDATE_BOOLEAN));
+            $featured = filter_var($request->input('featured'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+            if ($featured !== null) {
+                if ($featured) {
+                    $query->whereHas('featuredCountries', function ($q) use ($request) {
+                        if ($request->filled('country')) {
+                            $countryVal = $request->input('country');
+                            if (is_numeric($countryVal)) {
+                                $q->where('countries.id', $countryVal);
+                            } else {
+                                $q->where('countries.code', $countryVal);
+                            }
+                        }
+                    });
+                } else {
+                    $query->whereDoesntHave('featuredCountries', function ($q) use ($request) {
+                        if ($request->filled('country')) {
+                            $countryVal = $request->input('country');
+                            if (is_numeric($countryVal)) {
+                                $q->where('countries.id', $countryVal);
+                            } else {
+                                $q->where('countries.code', $countryVal);
+                            }
+                        }
+                    });
+                }
+            }
         }
 
         // Search Query
@@ -196,7 +221,27 @@ class ProductApiController extends Controller
                 $query->orderBy('name', 'desc');
                 break;
             case 'best-seller':
-                $query->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc');
+                if ($request->filled('country')) {
+                    $countryVal = $request->input('country');
+
+                    if (is_numeric($countryVal)) {
+                        $query->orderByRaw(
+                            'exists (select 1 from product_featured_countries pfc where pfc.product_id = products.id and pfc.country_id = ?) desc',
+                            [(int) $countryVal]
+                        );
+                    } else {
+                        $query->orderByRaw(
+                            'exists (select 1 from product_featured_countries pfc inner join countries c on c.id = pfc.country_id where pfc.product_id = products.id and c.code = ?) desc',
+                            [$countryVal]
+                        );
+                    }
+                } else {
+                    $query->orderByRaw(
+                        'exists (select 1 from product_featured_countries pfc where pfc.product_id = products.id) desc'
+                    );
+                }
+
+                $query->orderBy('created_at', 'desc');
                 break;
             default:
                 $query->orderBy('id', 'desc');

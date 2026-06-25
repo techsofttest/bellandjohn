@@ -95,6 +95,14 @@ class Product extends Model
         return $this->belongsToMany(Country::class);
     }
 
+    public function featuredCountries(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Country::class,
+            'product_featured_countries'
+        )->withTimestamps();
+    }
+
     public function getFirstAdditionalImageAttribute()
     {
         $images = $this->additional_images ?? [];

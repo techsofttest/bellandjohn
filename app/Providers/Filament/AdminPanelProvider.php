@@ -45,6 +45,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::HEX('#018ace'),
             ])
             ->navigationGroups([
+                'CRM',
                 'Ecommerce',
                 'Master Data',
                 'Content Management',
@@ -57,6 +58,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 \App\Filament\Widgets\OrdersOverview::class,
+                \App\Filament\Widgets\EnquiriesOverview::class,
                 \App\Filament\Widgets\OrdersCountChart::class,
                 \App\Filament\Widgets\SalesChart::class,
             ])

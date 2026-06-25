@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\EnquiryExecutiveAssignment;
+use App\Models\Executive;
 use App\Mail\QuoteRequestMail;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -89,6 +91,12 @@ class OrderApiController extends Controller
                 'placed_at' => now(),
             ]);
 
+            $assignment = EnquiryExecutiveAssignment::where('customer_email', $request->email)->first();
+            if ($assignment) {
+                $order->executive_id = $assignment->executive_id;
+                $order->save();
+            }
+
             $subtotal = 0;
 
             // Save order items using the order_items pivot table
@@ -135,6 +143,12 @@ class OrderApiController extends Controller
                 $order->load('items.product');
                 $adminEmail = env('MAIL_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS', 'admin@bellnjohn.com'));
                 Mail::to($adminEmail)->send(new QuoteRequestMail($order));
+                if ($order->executive_id) {
+                    $executive = Executive::find($order->executive_id);
+                    if ($executive?->email) {
+                        Mail::to($executive->email)->send(new QuoteRequestMail($order));
+                    }
+                }
             } catch (Exception $mailEx) {
                 Log::warning('Quote request email failed: ' . $mailEx->getMessage());
             }

@@ -68,6 +68,9 @@ class ProductsTable
                 ToggleColumn::make('is_active')
                     ->label('Active')
                     ->sortable(),
+                ToggleColumn::make('is_bestseller')
+                    ->label('Bestseller')
+                    ->sortable(),
                 TextColumn::make('featuredCountries.name')
                     ->label('Featured In')
                     ->badge()

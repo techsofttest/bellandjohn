@@ -18,7 +18,7 @@ class Product extends Model
         'additional_images' => 'array',
         'variant_options' => 'array',
         'is_active' => 'boolean',
-        'is_featured' => 'boolean',
+        'is_bestseller' => 'boolean',
         'fixed_shipping_rate_only' => 'boolean',
         'shipping_disabled_methods' => 'array',
         'shipping_enabled_methods' => 'array',

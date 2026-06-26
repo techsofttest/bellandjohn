@@ -202,6 +202,9 @@ class ProductForm
                                 Toggle::make('is_active')
                                     ->label('Is Active')
                                     ->default(true),
+                                Toggle::make('is_bestseller')
+                                    ->label('Is Bestseller')
+                                    ->default(false),
                             ]),
 
                         CheckboxList::make('featuredCountries')

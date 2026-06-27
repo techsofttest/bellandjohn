@@ -222,6 +222,13 @@ class OrderApiController extends Controller
      */
     protected function pushOrderToZohoCrm(Order $order)
 {
+    // TODO: Remove this restriction once Zoho CRM is fully configured for all regions.
+    $country = strtolower(trim($order->billing_address['country'] ?? ''));
+    if (!in_array($country, ['uae', 'united arab emirates'])) {
+        Log::info('Zoho CRM push skipped: order is not from UAE.', ['country' => $country]);
+        return;
+    }
+
     $zoho = config('services.zoho');
 
     if (empty($zoho['client_id']) || empty($zoho['client_secret']) || empty($zoho['refresh_token'])) {
@@ -238,8 +245,6 @@ class OrderApiController extends Controller
 
     $payload = $this->buildZohoCrmLeadPayload($order);
 
-    Log::warning('Zoho Payload', $payload);
-
     $response = Http::withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $accessToken,
         'Content-Type' => 'application/json',
@@ -250,10 +255,6 @@ class OrderApiController extends Controller
         'trigger' => ['approval', 'workflow', 'blueprint'],
     ]);
 
-    Log::warning('Zoho Lead API', [
-        'status' => $response->status(),
-        'body' => $response->body(),
-    ]);
 
     if (!$response->successful()) {
         Log::warning('Zoho CRM lead creation failed', [
@@ -281,11 +282,6 @@ class OrderApiController extends Controller
         'auth_domain' => $zoho['auth_domain'],
         ]);
 
-         // Debug log
-        Log::warning('Zoho token response', [
-            'status' => $response->status(),
-            'body' => $response->body(),
-        ]);
 
         if (!$response->successful()) {
             Log::warning('Zoho CRM token refresh failed: ' . $response->status() . ' ' . $response->body());
@@ -309,16 +305,21 @@ class OrderApiController extends Controller
         if (!empty($productNames)) {
             $descriptionParts[] = 'Products: ' . $productNames;
         }
-        if (!empty($address)) {
-            $descriptionParts[] = 'Shipping address: ' . ($address['address'] ?? '') . ', ' . ($address['city'] ?? '') . ', ' . ($address['state'] ?? '') . ', ' . ($address['country'] ?? '');
-        }
+
 
         return [
-            'First_Name' => $address['first_name'] ?? ($order->customer?->name ?? 'Unknown'),
-            'Last_Name' => $address['last_name'] ?? 'Unknown',
-            'Email' => $address['email'] ?? null,
-            'Phone' => $address['phone'] ?? null,
-            'Company' => $address['company'] ?: 'Individual',
+            'First_Name'  => $address['first_name'] ?? ($order->customer?->name ?? 'Unknown'),
+            'Last_Name'   => $address['last_name'] ?? 'Unknown',
+            'Email'       => $address['email'] ?? null,
+            'Phone'       => $address['phone'] ?? null,
+            'Company'     => $address['company'] ?: 'Individual',
+
+            'Street'      => $address['address'] ?? '',
+            'City'        => $address['city'] ?? '',
+            'State'       => $address['state'] ?? '',
+            'Zip_Code'    => $address['zip'] ?? '',
+            'Country'     => $address['country'] ?? '',
+
             'Lead_Source' => 'Website Quote Request',
             'Description' => implode("\n", array_filter($descriptionParts)),
         ];

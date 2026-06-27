@@ -54,10 +54,7 @@ class ViewExecutive extends ViewRecord
     public function relatedEnquiries(string $email)
     {
         return Order::query()
-            ->where(function ($query) use ($email) {
-                $query->where('billing_address->email', $email)
-                    ->orWhere('shipping_address->email', $email);
-            })
+            ->where('customer_email', $email)
             ->orderByDesc('placed_at')
             ->get();
     }
@@ -66,19 +63,15 @@ class ViewExecutive extends ViewRecord
     {
         $assignment = EnquiryExecutiveAssignment::findOrFail($assignmentId);
         $assignment->update(['executive_id' => $newExecutiveId]);
-        Order::where(function ($query) use ($assignment) {
-            $query->where('billing_address->email', $assignment->customer_email)
-                ->orWhere('shipping_address->email', $assignment->customer_email);
-        })->update(['executive_id' => $newExecutiveId]);
+        Order::where('customer_email', $assignment->customer_email)
+            ->update(['executive_id' => $newExecutiveId]);
     }
 
     public function removeAssignment(int $assignmentId): void
     {
         $assignment = EnquiryExecutiveAssignment::findOrFail($assignmentId);
-        Order::where(function ($query) use ($assignment) {
-            $query->where('billing_address->email', $assignment->customer_email)
-                ->orWhere('shipping_address->email', $assignment->customer_email);
-        })->update(['executive_id' => null]);
+        Order::where('customer_email', $assignment->customer_email)
+            ->update(['executive_id' => null]);
         $assignment->delete();
     }
 }

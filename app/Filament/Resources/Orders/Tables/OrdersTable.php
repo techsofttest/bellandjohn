@@ -116,12 +116,12 @@ class OrdersTable
                             ->default(true),
                     ])
                     ->fillForm(fn ($record) => [
-                        'customer_email' => data_get($record->billing_address, 'email'),
+                        'customer_email' => $record->customer_email,
                         'executive_id' => $record->executive_id,
                         'apply_to_existing_requests' => true,
                     ])
                     ->action(function (array $data, $record) {
-                        $email = data_get($record->billing_address, 'email');
+                        $email = $record->customer_email;
 
                         if (! $email) {
                             return;
@@ -133,10 +133,8 @@ class OrdersTable
                         );
 
                         if (!empty($data['apply_to_existing_requests'])) {
-                            \App\Models\Order::where(function (Builder $query) use ($email) {
-                                $query->where('billing_address->email', $email)
-                                    ->orWhere('shipping_address->email', $email);
-                            })->update(['executive_id' => $data['executive_id']]);
+                            \App\Models\Order::where('customer_email', $email)
+                                ->update(['executive_id' => $data['executive_id']]);
                         }
                     })
                     ->modalHeading('Assign Executive'),

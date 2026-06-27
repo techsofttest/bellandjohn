@@ -76,6 +76,9 @@ class OrderApiController extends Controller
             $order = Order::create([
                 'order_number' => $orderNumber,
                 'customer_id' => $customerId,
+                'customer_name' => trim($request->first_name . ' ' . $request->last_name),
+                'customer_email' => $request->email,
+                'customer_phone' => $request->phone,
                 'subtotal' => 0, // Will calculate below
                 'discount_total' => 0,
                 'tax_total' => 0,
@@ -199,8 +202,7 @@ class OrderApiController extends Controller
         }
 
         $requests = Order::where(function($query) use ($email) {
-            $query->where('billing_address->email', $email)
-                  ->orWhere('shipping_address->email', $email)
+            $query->where('customer_email', $email)
                   ->orWhereHas('customer', function($subQ) use ($email) {
                       $subQ->where('email', $email);
                   });

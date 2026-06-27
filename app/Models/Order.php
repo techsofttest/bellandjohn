@@ -31,6 +31,7 @@ class Order extends Model
         'notes',
         'placed_at',
         'executive_id',
+        'country',
     ];
 
     protected $casts = [

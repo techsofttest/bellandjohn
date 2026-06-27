@@ -41,6 +41,11 @@ class OrdersTable
                     ->label('Address')
                     ->state(fn ($record) => $record->shipping_address['address'] ?? '')
                     ->limit(45),
+                TextColumn::make('country')
+                    ->label('Country')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
                 TextColumn::make('executive.name')
                     ->label('Executive')
                     ->badge()

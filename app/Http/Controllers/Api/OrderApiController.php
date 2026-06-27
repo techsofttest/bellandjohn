@@ -92,6 +92,7 @@ class OrderApiController extends Controller
                 'shipping_address' => $addressJson,
                 'notes' => $request->notes ?? 'Quote enquiry submitted from checkout.',
                 'placed_at' => now(),
+                'country'   => $request->country,
             ]);
 
             $assignment = EnquiryExecutiveAssignment::where('customer_email', $request->email)->first();

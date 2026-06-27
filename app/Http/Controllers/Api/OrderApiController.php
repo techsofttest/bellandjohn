@@ -221,40 +221,49 @@ class OrderApiController extends Controller
      * Push the quote request to Zoho CRM as a lead.
      */
     protected function pushOrderToZohoCrm(Order $order)
-    {
-        $zoho = config('services.zoho');
-        if (empty($zoho['client_id']) || empty($zoho['client_secret']) || empty($zoho['refresh_token'])) {
-            Log::warning('Zoho CRM credentials are not configured. Skipping push.');
-            return;
-        }
+{
+    $zoho = config('services.zoho');
 
-        $accessToken = $this->getZohoAccessToken($zoho);
-        if (!$accessToken) {
-            Log::warning('Zoho CRM access token could not be acquired. Skipping push.');
-            return;
+    if (empty($zoho['client_id']) || empty($zoho['client_secret']) || empty($zoho['refresh_token'])) {
+        Log::warning('Zoho CRM credentials are not configured. Skipping push.');
+        return;
+    }
 
-        $payload = $this->buildZohoCrmLeadPayload($order);
-        $response = Http::withHeaders([
+    $accessToken = $this->getZohoAccessToken($zoho);
+
+    if (!$accessToken) {
+        Log::warning('Zoho CRM access token could not be acquired. Skipping push.');
+        return;
+    } // <-- This closing brace was missing
+
+    $payload = $this->buildZohoCrmLeadPayload($order);
+
+    Log::warning('Zoho Payload', $payload);
+
+    $response = Http::withHeaders([
         'Authorization' => 'Zoho-oauthtoken ' . $accessToken,
         'Content-Type' => 'application/json',
-        ])
-        ->acceptJson()
-        ->post("{$zoho['api_domain']}/crm/v8/{$zoho['module']}", [
-            'data' => [$payload],
-            'trigger' => ['approval', 'workflow', 'blueprint'],
-        ]);
+    ])
+    ->acceptJson()
+    ->post("{$zoho['api_domain']}/crm/v8/{$zoho['module']}", [
+        'data' => [$payload],
+        'trigger' => ['approval', 'workflow', 'blueprint'],
+    ]);
 
-        Log::warning('Zoho Lead API', [
+    Log::warning('Zoho Lead API', [
+        'status' => $response->status(),
+        'body' => $response->body(),
+    ]);
+
+    if (!$response->successful()) {
+        Log::warning('Zoho CRM lead creation failed', [
             'status' => $response->status(),
             'body' => $response->body(),
-            'payload' => $payload,
         ]);
+    }
+}
 
-        if (!$response->successful()) {
-            $body = $response->body();
-            Log::warning('Zoho CRM lead creation failed: ' . $response->status() . ' ' . $body);
-        }
-    }}
+
 
     protected function getZohoAccessToken(array $zoho)
     {

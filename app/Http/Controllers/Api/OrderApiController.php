@@ -256,6 +256,12 @@ class OrderApiController extends Controller
             'grant_type' => 'refresh_token',
         ]);
 
+         // Debug log
+        Log::warning('Zoho token response', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
         if (!$response->successful()) {
             Log::warning('Zoho CRM token refresh failed: ' . $response->status() . ' ' . $response->body());
             return null;

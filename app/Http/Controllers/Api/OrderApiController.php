@@ -256,6 +256,13 @@ class OrderApiController extends Controller
             'grant_type' => 'refresh_token',
         ]);
 
+         Log::warning('Zoho Config', [
+        'client_id' => $zoho['client_id'],
+        'client_secret' => substr($zoho['client_secret'], 0, 8) . '...',
+        'refresh_token' => substr($zoho['refresh_token'], 0, 20) . '...',
+        'auth_domain' => $zoho['auth_domain'],
+        ]);
+
          // Debug log
         Log::warning('Zoho token response', [
             'status' => $response->status(),

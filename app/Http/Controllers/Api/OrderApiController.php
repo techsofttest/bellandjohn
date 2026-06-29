@@ -90,7 +90,7 @@ class OrderApiController extends Controller
                 'status' => 'pending',
                 'billing_address' => $addressJson,
                 'shipping_address' => $addressJson,
-                'notes' => $request->notes ?? 'Quote enquiry submitted from checkout.',
+                'notes' => $request->notes ?? 'From Website',
                 'placed_at' => now(),
                 'country'   => $request->country,
             ]);
@@ -144,7 +144,7 @@ class OrderApiController extends Controller
 
             // Send admin notification email
             try {
-                $order->load('items.product');
+                $order->load('items.product', 'items.variant');
                 $adminEmail = env('MAIL_ADMIN_EMAIL', env('MAIL_FROM_ADDRESS', 'admin@bellnjohn.com'));
                 Mail::to($adminEmail)->send(new QuoteRequestMail($order));
                 if ($order->executive_id) {
@@ -295,17 +295,36 @@ class OrderApiController extends Controller
     protected function buildZohoCrmLeadPayload(Order $order)
     {
         $address = $order->billing_address ?? [];
-        $productNames = $order->items->map(function ($item) {
-            return $item->title;
-        })->filter()->unique()->join(', ');
+		
+		
+        $productDetails = $order->items->map(function ($item) {
+
+		$parts = [];
+
+		// Product name
+		$parts[] = $item->title;
+
+		// Variant (if available)
+		if (!empty($item->variant_id) && $item->variant) {
+			$parts[] = '(' . $item->variant->name . ')';
+		}
+
+		// Quantity
+		$parts[] = 'x ' . $item->quantity;
+
+		return implode(' ', $parts);
+
+		})->implode(', ');
+		
 
         $descriptionParts = [];
         if (!empty($order->notes)) {
             $descriptionParts[] = trim($order->notes);
         }
-        if (!empty($productNames)) {
-            $descriptionParts[] = 'Products: ' . $productNames;
-        }
+		
+        if (!empty($productDetails)) {
+		$descriptionParts[] = 'Products: ' . $productDetails;
+		}
 
 
         return [

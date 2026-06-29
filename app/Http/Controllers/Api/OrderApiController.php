@@ -298,23 +298,15 @@ class OrderApiController extends Controller
 		
 		
         $productDetails = $order->items->map(function ($item) {
+            $title = $item->title;
 
-		$parts = [];
+            // Variant (if available)
+            if (!empty($item->variant_id) && $item->variant) {
+                $title .= ',(' . $item->variant->name . ')';
+            }
 
-		// Product name
-		$parts[] = $item->title;
-
-		// Variant (if available)
-		if (!empty($item->variant_id) && $item->variant) {
-			$parts[] = '(' . $item->variant->name . ')';
-		}
-
-		// Quantity
-		$parts[] = 'x ' . $item->quantity;
-
-		return implode(' ', $parts);
-
-		})->implode(', ');
+            return $title . ' x ' . $item->quantity;
+        })->implode(', ');
 		
 
         $descriptionParts = [];

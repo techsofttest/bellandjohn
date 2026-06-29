@@ -119,11 +119,27 @@ class OrderApiController extends Controller
                 $price = (float) ($product->price ?? 0);
                 $itemSubtotal = $price * $qty;
 
+                $selectedVariants = [];
+                if (!empty($itemData['packaging'])) {
+                    $selectedVariants[] = 'Pack:' . $itemData['packaging'];
+                }
+                if (!empty($itemData['color'])) {
+                    $selectedVariants[] = 'Color:' . $itemData['color'];
+                }
+                if (!empty($itemData['size'])) {
+                    $selectedVariants[] = 'Size:' . $itemData['size'];
+                }
+
+                $title = $product->title ?? $product->name;
+                if (!empty($selectedVariants)) {
+                    $title .= ',(' . implode(',', $selectedVariants) . ')';
+                }
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product->id,
                     'variant_id' => $itemData['variant_id'] ?? null,
-                    'title' => $product->title ?? $product->name,
+                    'title' => $title,
                     'sku' => $itemData['sku'] ?? (is_array($product->sku) ? ($product->sku[0] ?? '') : ($product->sku ?? '')),
                     'quantity' => $qty,
                     'price' => $price,

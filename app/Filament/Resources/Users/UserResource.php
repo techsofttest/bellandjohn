@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
-use App\Models\User;
+use App\Models\Customer;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Schemas\Schema;
@@ -16,7 +16,7 @@ use UnitEnum;
 
 class UserResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Customer::class;
 
     protected static ?string $navigationLabel = 'Customers';
 
@@ -28,20 +28,17 @@ class UserResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Master Data';
 
-    // Only show customers
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('role', 'customer');
-    }
-
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
-        TextInput::make('name')->required(),
-        TextInput::make('email')->email()->required(),
-        TextInput::make('password')->password()->required()
-                ->dehydrateStateUsing(fn ($state) => bcrypt($state)),
+            TextInput::make('name')->required(),
+            TextInput::make('email')->email()->required(),
+            TextInput::make('phone'),
+            TextInput::make('password')
+                ->password()
+                ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                ->dehydrated(fn ($state) => filled($state))
+                ->required(fn (string $context): bool => $context === 'create'),
         ]);
     }
 
@@ -50,6 +47,7 @@ class UserResource extends Resource
         return $table->columns([
             TextColumn::make('name')->sortable()->searchable(),
             TextColumn::make('email')->sortable()->searchable(),
+            TextColumn::make('phone')->sortable()->searchable(),
         ]);
     }
 

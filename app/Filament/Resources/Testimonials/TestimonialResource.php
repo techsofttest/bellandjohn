@@ -20,6 +20,8 @@ use UnitEnum;
 
 class TestimonialResource extends Resource
 {
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $model = Testimonial::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-star';
